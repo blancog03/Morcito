@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Para Jenifer 💖</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <style>
+        /* ESTILOS GENERALES */
+        * {
+            box-sizing: border-box;
+            touch-action: manipulation;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', cursive;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
+            color: white;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        .screen {
+            position: fixed;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.5s ease;
+            padding: 20px;
+        }
+
+        .hidden {
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(20px);
+        }
+
+        h1, h2 {
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        /* MENÚ PRINCIPAL */
+        #menu-screen {
+            justify-content: center;
+        }
+
+        .title {
+            font-size: 2.5rem;
+            margin-bottom: 40px;
+            color: #ff0066;
+        }
+
+        .games-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .game-btn {
+            background: #ff6b8b;
+            color: white;
+            border: none;
+            padding: 20px;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+            width: 100%;
+        }
+
+        .game-btn:hover, .game-btn:active {
+            background: #ff4757;
+            transform: scale(1.05);
+        }
+
+        /* BOTÓN VOLVER */
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            font-size: 1.2rem;
+            padding: 10px 15px;
+            z-index: 100;
+            cursor: pointer;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50px;
+            backdrop-filter: blur(5px);
+            border: none;
+            color: white;
+        }
+
+        /* JUEGO DE CORAZONES */
+        #hearts-game {
+            justify-content: flex-start;
+            padding-top: 70px;
+        }
+
+        #player {
+            position: fixed;
+            font-size: 60px;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+            text-shadow: 0 0 10px rgba(255,105,180,0.8);
+            transition: left 0.1s linear;
+        }
+
+        .heart {
+            position: absolute;
+            font-size: 30px;
+            z-index: 5;
+            animation: float 4s linear forwards;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(-100px) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+        }
+
+        #score {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            font-size: 1.5rem;
+            background: rgba(255,255,255,0.2);
+            padding: 10px 20px;
+            border-radius: 50px;
+            z-index: 20;
+            backdrop-filter: blur(5px);
+        }
+
+        #message-display {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 182, 193, 0.9);
+            padding: 20px;
+            border-radius: 15px;
+            font-size: 1.5rem;
+            text-align: center;
+            max-width: 90%;
+            z-index: 100;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+        }
+
+        /* GALERÍA 3D */
+        #memories-game {
+            padding-top: 80px;
+            perspective: 1000px;
+            overflow: hidden;
+        }
+
+        #carousel-container {
+            position: relative;
+            width: 100%;
+            height: 60vh;
+            margin: 20px 0;
+            transform-style: preserve-3d;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .carousel-item {
+            position: absolute;
+            width: 200px;
+            height: 250px;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            transition: transform 0.5s, z-index 0.5s;
+            transform-style: preserve-3d;
+            cursor: pointer;
+        }
+
+        .carousel-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+
+        .carousel-item.active {
+            transform: translateZ(150px) scale(1.1);
+            z-index: 10;
+        }
+
+        /* CONTROLES DEL CARRUSEL */
+        #carousel-controls {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .carousel-arrow {
+            font-size: 2rem;
+            margin: 0 20px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        /* VISOR FULLSCREEN */
+        #fullscreen-viewer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        #fullscreen-viewer.show {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        #fullscreen-image {
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 10px;
+            box-shadow: 0 0 30px rgba(255,182,193,0.6);
+        }
+
+        /* EFECTOS DE CONFETI */
+        .confetti {
+            position: fixed;
+            width: 15px;
+            height: 15px;
+            background-color: #f00;
+            opacity: 0;
+            z-index: 999;
+            animation: confetti-fall 5s linear forwards;
+        }
+
+        @keyframes confetti-fall {
+            0% { transform: translateY(-100px) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 600px) {
+            .title { font-size: 2rem; }
+            .game-btn { padding: 15px; font-size: 1rem; }
+            #player { font-size: 50px; bottom: 20px; }
+            .carousel-item { width: 150px; height: 200px; }
+            .carousel-arrow { margin: 0 10px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Menú Principal -->
+    <div id="menu-screen" class="screen">
+        <h1 class="title animate__animated animate__heartBeat">Para Morcito con todo mi cariño 💖</h1>
+        <div class="games-grid">
+            <button class="game-btn" data-game="hearts">Atrapa Corazones</button>
+            <button class="game-btn" data-game="memories">Nuestros Recuerdos</button>
+        </div>
+    </div>
+
+    <!-- Juego de Corazones -->
+    <div id="hearts-game" class="screen hidden">
+        <h1>🌼El jardin de corazones de Morcito😍🌷<br>Atrapa 100 si puedes BRUJA
+        </h1>
+        <button class="back-btn" id="hearts-back">← Menú</button>
+        <div id="hearts-container"></div>
+        <div id="player">🌸</div>
+        <div id="score">❤️ <span>0</span>/100</div>
+        <div id="message-display" class="hidden"></div>
+    </div>
+
+    <!-- Galería de Recuerdos -->
+    <div id="memories-game" class="screen hidden">
+        <button class="back-btn" id="memories-back">← Menú</button>
+        <h2>Pequeños pedazos de nuestos corazones</h2>
+        <div id="carousel-container"></div>
+        <div id="carousel-controls">
+            <span class="carousel-arrow" id="prev-btn">❮</span>
+            <span class="carousel-arrow" id="next-btn">❯</span>
+        </div>
+    </div>
+
+    <!-- Visor de Imagen Completa -->
+    <div id="fullscreen-viewer">
+        <img id="fullscreen-image" src="" alt="">
+    </div>
+
+    <!-- Efectos de Audio -->
+    <audio id="bg-music" loop src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"></audio>
+    <audio id="heart-sound" src="https://www.soundjay.com/buttons/sounds/button-09.mp3"></audio>
+    <audio id="win-sound" src="https://www.soundjay.com/buttons/sounds/button-21.mp3"></audio>
+
+    <script>
+        // Variables globales
+        let score = 0;
+        let gameActive = true;
+        let touchX = window.innerWidth / 2;
+        let currentAngle = 0;
+        let targetAngle = 0;
+        let isDragging = false;
+        let startX = 0;
+        let startAngle = 0;
+        let selectedIndex = 0;
+
+        // Mensajes de amor
+        const loveMessages = [
+            "Eres mi razón de ser 💖",
+            "Cada día te amo más 🌸",
+            "Tu sonrisa ilumina mi vida ☀️",
+            "Eres mi sueño hecho realidad 🌟",
+            "Nada como tu abrazo 🤗",
+            "Eres perfecta a mi lado 💘",
+            "Mi corazón late por ti 💓",
+            "Eres mi felicidad completa 😊",
+            "Contigo todo es mejor 🚀",
+            "❤️🌷FELIZ CUMPLE MES MI AMOR🌼😍"
+        ];
+
+        // Imágenes predefinidas para la galería (reemplaza con tus imágenes)
+        const memoriesImages = [
+    "imagenes/1.jpg",
+    "imagenes/2.jpg",
+    "imagenes/3.jpg",
+    "imagenes/4.jpg",
+    "imagenes/5.jpg",
+    "imagenes/6.jpg",
+    "imagenes/7.jpg",
+    "imagenes/8.jpg",
+    "imagenes/9.jpg",
+    "imagenes/10.jpg"
+];
+
+        // Inicialización del juego
+        document.addEventListener('DOMContentLoaded', () => {
+            // Configurar menú
+            document.querySelectorAll('.game-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const game = btn.getAttribute('data-game');
+                    switchScreen(`${game}-game`);
+                    
+                    if (game === 'hearts') {
+                        initHeartsGame();
+                    } else if (game === 'memories') {
+                        initMemoriesGame();
+                    }
+                });
+            });
+            
+            // Botones de volver
+            document.getElementById('hearts-back').addEventListener('click', () => switchScreen('menu'));
+            document.getElementById('memories-back').addEventListener('click', () => switchScreen('menu'));
+            
+            // Control táctil para el jugador
+            document.addEventListener('touchmove', handleTouchMove, { passive: false });
+            document.addEventListener('mousemove', handleMouseMove);
+            
+            // Permitir audio después de interacción
+            document.addEventListener('click', initAudio, { once: true });
+        });
+
+        // Función para cambiar pantallas
+        function switchScreen(screenName) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.add('hidden');
+            });
+            document.getElementById(screenName).classList.remove('hidden');
+        }
+
+        // Función para inicializar audio
+        function initAudio() {
+            const bgMusic = document.getElementById('bg-music');
+            bgMusic.volume = 0.3;
+            bgMusic.play().catch(e => console.log("Audio requiere interacción del usuario"));
+        }
+
+        /* ========== JUEGO DE CORAZONES ========== */
+        function initHeartsGame() {
+            score = 0;
+            gameActive = true;
+            updateScore();
+            document.getElementById('hearts-container').innerHTML = '';
+            document.getElementById('message-display').classList.add('hidden');
+            
+            const heartInterval = setInterval(() => {
+                if (!gameActive || score >= 100) {
+                    clearInterval(heartInterval);
+                    if (score >= 100) {
+                        showFinalMessage();
+                    }
+                    return;
+                }
+                createHeart();
+            }, 800);
+            
+            const collisionInterval = setInterval(() => {
+                if (!gameActive || score >= 100) {
+                    clearInterval(collisionInterval);
+                    return;
+                }
+                checkCollisions();
+            }, 50);
+        }
+
+        function handleTouchMove(e) {
+            e.preventDefault();
+            touchX = e.touches[0].clientX;
+            updatePlayerPosition();
+        }
+
+        function handleMouseMove(e) {
+            touchX = e.clientX;
+            updatePlayerPosition();
+        }
+
+        function updatePlayerPosition() {
+            const player = document.getElementById('player');
+            const gameWidth = window.innerWidth;
+            const playerWidth = 60;
+            const newX = Math.max(playerWidth/2, Math.min(touchX, gameWidth - playerWidth/2));
+            player.style.left = `${newX}px`;
+        }
+
+        function createHeart() {
+            if (!gameActive || score >= 100) return;
+            
+            const heart = document.createElement('div');
+            heart.innerHTML = ['💖', '💘', '💓', '💝'][Math.floor(Math.random() * 4)];
+            heart.className = 'heart';
+            heart.style.left = `${Math.random() * 80 + 10}vw`;
+            heart.style.animationDuration = `${3 + Math.random() * 3}s`;
+            document.getElementById('hearts-container').appendChild(heart);
+
+            setTimeout(() => {
+                if (heart.parentNode) heart.remove();
+            }, 4000);
+        }
+
+        function checkCollisions() {
+            if (!gameActive || score >= 100) return;
+            
+            const player = document.getElementById('player');
+            const playerRect = player.getBoundingClientRect();
+            const hearts = document.querySelectorAll('.heart');
+
+            hearts.forEach(heart => {
+                const heartRect = heart.getBoundingClientRect();
+                
+                if (isColliding(playerRect, heartRect)) {
+                    heart.remove();
+                    score++;
+                    updateScore();
+                    playSound('heart-sound');
+                    
+                    // Mostrar mensaje cada 10 corazones
+                    if (score > 0 && score % 10 === 0 && score <= 100) {
+                        showLoveMessage(score / 10 - 1);
+                    }
+                }
+            });
+        }
+
+        function isColliding(rect1, rect2) {
+            return !(
+                rect1.right < rect2.left || 
+                rect1.left > rect2.right || 
+                rect1.bottom < rect2.top || 
+                rect1.top > rect2.bottom
+            );
+        }
+
+        function updateScore() {
+            document.querySelector('#score span').textContent = score;
+        }
+
+        function showLoveMessage(index) {
+            const messageDisplay = document.getElementById('message-display');
+            messageDisplay.textContent = loveMessages[index];
+            messageDisplay.classList.remove('hidden');
+            createConfetti();
+            playSound('win-sound');
+            
+            setTimeout(() => {
+                messageDisplay.classList.add('hidden');
+            }, 3000);
+        }
+
+        function showFinalMessage() {
+            const messageDisplay = document.getElementById('message-display');
+            messageDisplay.innerHTML = '❤️🌷FELIZ CUMPLE MES MI AMOR🌼😍<br>💖💖💖';
+            messageDisplay.classList.remove('hidden');
+            createConfetti();
+            playSound('win-sound');
+        }
+
+        /* ========== GALERÍA 3D INTERACTIVA ========== */
+        function initMemoriesGame() {
+            const container = document.getElementById('carousel-container');
+            container.innerHTML = '';
+            
+            // Crear elementos del carrusel
+            memoriesImages.forEach((imgSrc, index) => {
+                const item = document.createElement('div');
+                item.className = 'carousel-item';
+                item.dataset.index = index;
+                
+                const img = document.createElement('img');
+                img.src = imgSrc;
+                img.alt = `Recuerdo ${index + 1}`;
+                
+                item.appendChild(img);
+                container.appendChild(item);
+                
+                // Evento para seleccionar imagen
+                item.addEventListener('click', () => {
+                    selectImage(index);
+                });
+            });
+            
+            // Configurar controles
+            document.getElementById('prev-btn').addEventListener('click', () => rotateCarousel(-1));
+            document.getElementById('next-btn').addEventListener('click', () => rotateCarousel(1));
+            
+            // Configurar eventos táctiles
+            setupTouchEvents();
+            
+            // Posicionar imágenes inicialmente
+            updateCarousel();
+            
+            // Seleccionar la primera imagen por defecto
+            selectImage(0);
+        }
+
+        function setupTouchEvents() {
+            const container = document.getElementById('carousel-container');
+            
+            container.addEventListener('touchstart', (e) => {
+                isDragging = true;
+                startX = e.touches[0].clientX;
+                startAngle = currentAngle;
+                e.preventDefault();
+            });
+            
+            container.addEventListener('touchmove', (e) => {
+                if (!isDragging) return;
+                const x = e.touches[0].clientX;
+                const deltaX = x - startX;
+                targetAngle = startAngle + (deltaX / 5);
+                updateCarousel();
+                e.preventDefault();
+            });
+            
+            container.addEventListener('touchend', () => {
+                if (!isDragging) return;
+                isDragging = false;
+                
+                // Ajustar a la posición más cercana
+                const items = document.querySelectorAll('.carousel-item');
+                const anglePerItem = 360 / items.length;
+                const normalizedAngle = ((targetAngle % 360) + 360) % 360;
+                const closestIndex = Math.round(normalizedAngle / anglePerItem) % items.length;
+                
+                selectImage(closestIndex);
+            });
+        }
+
+        function rotateCarousel(direction) {
+            const items = document.querySelectorAll('.carousel-item');
+            const anglePerItem = 360 / items.length;
+            selectedIndex = (selectedIndex + direction + items.length) % items.length;
+            targetAngle = 360 - (selectedIndex * anglePerItem);
+            animateCarousel();
+        }
+
+        function selectImage(index) {
+            const items = document.querySelectorAll('.carousel-item');
+            const anglePerItem = 360 / items.length;
+            selectedIndex = index;
+            targetAngle = 360 - (selectedIndex * anglePerItem);
+            
+            // Quitar clase active de todos
+            items.forEach(item => item.classList.remove('active'));
+            
+            // Añadir clase active al seleccionado
+            items[index].classList.add('active');
+            
+            // Mostrar imagen en pantalla completa
+            showFullscreenImage(memoriesImages[index]);
+            
+            animateCarousel();
+        }
+
+        function animateCarousel() {
+            const animationDuration = 500; // ms
+            const startTime = performance.now();
+            const startAngle = currentAngle;
+            const angleChange = targetAngle - startAngle;
+            
+            function step(timestamp) {
+                const progress = Math.min((timestamp - startTime) / animationDuration, 1);
+                currentAngle = startAngle + (angleChange * progress);
+                updateCarousel();
+                
+                if (progress < 1) {
+                    requestAnimationFrame(step);
+                }
+            }
+            
+            requestAnimationFrame(step);
+        }
+
+        function updateCarousel() {
+            const items = document.querySelectorAll('.carousel-item');
+            const radius = Math.min(window.innerWidth, window.innerHeight) * 0.8 / 2;
+            
+            items.forEach((item, index) => {
+                const angle = (currentAngle + (index * (360 / items.length))) * (Math.PI / 180);
+                const x = radius * Math.sin(angle);
+                const z = radius * Math.cos(angle) - radius;
+                
+                item.style.transform = `
+                    translateX(${x}px) 
+                    translateZ(${z}px) 
+                    rotateY(${-angle}rad)
+                    scale(${index === selectedIndex ? 1.1 : 0.9})
+                `;
+                
+                // Opacidad basada en la posición
+                const opacity = 0.6 + (0.4 * (1 - Math.abs(z) / radius));
+                item.style.opacity = opacity;
+            });
+        }
+
+        function showFullscreenImage(src) {
+            const viewer = document.getElementById('fullscreen-viewer');
+            const img = document.getElementById('fullscreen-image');
+            
+            img.src = src;
+            viewer.classList.add('show');
+            
+            viewer.addEventListener('click', () => {
+                viewer.classList.remove('show');
+            });
+        }
+
+        /* ========== FUNCIONES GENERALES ========== */
+        function playSound(id) {
+            const sound = document.getElementById(id);
+            sound.currentTime = 0;
+            sound.play().catch(e => console.log("Error al reproducir sonido"));
+        }
+
+        function createConfetti() {
+            const colors = ['#ff6b8b', '#ffb6c1', '#ffd166', '#06d6a0', '#118ab2', '#073b4c'];
+            
+            for (let i = 0; i < 100; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = `${Math.random() * 100}vw`;
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.width = `${10 + Math.random() * 10}px`;
+                confetti.style.height = `${10 + Math.random() * 10}px`;
+                confetti.style.animationDuration = `${3 + Math.random() * 2}s`;
+                document.body.appendChild(confetti);
+                
+                setTimeout(() => {
+                    confetti.remove();
+                }, 5000);
+            }
+        }
+    </script>
+</body>
+</html>
